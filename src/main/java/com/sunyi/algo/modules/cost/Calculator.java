@@ -49,6 +49,9 @@ public class Calculator implements Closeable {
     }
 
 
+    //todo 需要计算一个成本 转换成一个整数
+
+
     @Override
     public void close() {
         try {
