@@ -24,6 +24,11 @@ public class Position implements Cloneable {
         this.y = y;
     }
 
+    public Position(long x, long y, String value) {
+        this.x = x;
+        this.y = y;
+        this.value = value;
+    }
 
     @Override
     public Object clone() {

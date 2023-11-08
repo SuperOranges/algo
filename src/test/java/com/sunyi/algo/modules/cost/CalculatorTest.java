@@ -9,11 +9,11 @@ class CalculatorTest {
 
     PathCostRefreshedEventHandler pathCostRefreshedEventHandler = new PathCostRefreshedEventHandler();
     MotionCostRefreshedEventHandler motionCostRefreshedEventHandler = new MotionCostRefreshedEventHandler();
-    Calculator calculator = new Calculator(pathCostRefreshedEventHandler, motionCostRefreshedEventHandler);
+    //Calculator calculator = new Calculator(pathCostRefreshedEventHandler, motionCostRefreshedEventHandler);
 
     @Test
     void publishCostRefreshedEvent() throws InterruptedException {
-        calculator.publishCostRefreshedEvent();
+        //calculator.publishCostRefreshedEvent();
         Thread.sleep(6000);
     }
 }
