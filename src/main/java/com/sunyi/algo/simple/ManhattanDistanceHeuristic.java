@@ -17,8 +17,25 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.modules.framework.algorithm;
+package com.sunyi.algo.simple;
 
-public enum TieBreakingStrategy {
-    NONE, HIGHEST_G_VALUES, SMALLEST_G_VALUES
+public class ManhattanDistanceHeuristic implements Heuristic {
+	/* Public: */
+	public static ManhattanDistanceHeuristic getInstance() {
+		if (manhattan_distance_heuristic == null) {
+			manhattan_distance_heuristic = new ManhattanDistanceHeuristic();
+		}
+		return manhattan_distance_heuristic;
+	}
+
+	@Override
+	public int distanceToGoal(MazeCell maze_cell, MazeCell goal) {
+		return DistanceCalculator.manhattanDistance(maze_cell.getX(), maze_cell.getY(), goal.getX(), goal.getY());
+	}
+
+	/* Private: */
+	private static ManhattanDistanceHeuristic manhattan_distance_heuristic = null;
+
+	private ManhattanDistanceHeuristic() {
+	}
 }

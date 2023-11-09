@@ -17,24 +17,11 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.modules.global_path_planning.algorithm;
-
-import com.sunyi.algo.model.Maze;
-import com.sunyi.algo.model.MazeCell;
-import com.sunyi.algo.modules.framework.algorithm.Heuristic;
-import com.sunyi.algo.modules.framework.algorithm.TieBreakingStrategy;
-import com.sunyi.algo.modules.framework.data_structure.BinaryHeap;
-import com.sunyi.algo.modules.framework.data_structure.BinaryHeapElement;
-
+package com.sunyi.algo.simple;
 
 public class AStar {
-
-    private int w, h, path_cost, neighborhood;
-    private boolean has_solution, mark_path, step_by_step;
-    private AStarNode graph[][], goal, start;
-    private BinaryHeap open_list;
-
-    public AStar(Maze maze, boolean mark_path, Heuristic heuristic) {
+    /* Public: */
+    public AStar(Maze maze, boolean mark_path, boolean step_by_step, TieBreakingStrategy tie_breaking_strategy, Heuristic heuristic, int neighborhood) {
 
         this.h = maze.getH();
         this.w = maze.getW();
@@ -43,14 +30,15 @@ public class AStar {
         this.graph = new AStarNode[this.h][this.w];
         for (int y = 0; y < this.h; y++) {
             for (int x = 0; x < this.w; x++) {
-                this.graph[y][x] = new AStarNode(maze.getMazeCell(x, y), TieBreakingStrategy.HIGHEST_G_VALUES);
+                this.graph[y][x] = new AStarNode(maze.getMazeCell(x, y), tie_breaking_strategy);
                 this.graph[y][x].h = heuristic.distanceToGoal(this.graph[y][x].getMazeCell(), maze.getGoal());
             }
         }
 
         this.has_solution = false;
         this.mark_path = mark_path;
-        this.neighborhood = 4;
+        this.step_by_step = step_by_step;
+        this.neighborhood = neighborhood;
         this.goal = this.graph[maze.getGoal().getY()][maze.getGoal().getX()];
         this.start = this.graph[maze.getStart().getY()][maze.getStart().getX()];
 
@@ -132,9 +120,10 @@ public class AStar {
                 int x, y;
                 x = node.getMazeCell().getX() + Maze.delta_x[i];
                 y = node.getMazeCell().getY() + Maze.delta_y[i];
-                int cost = node.getMazeCell().getCost();
+
                 if (0 <= x && x < this.w && 0 <= y && y < this.h) {
                     AStarNode child = this.graph[y][x];
+                    int cost = node.getMazeCell().getCost() + directionCost(node, child, this.goal);
                     if (child.getMazeCell().isBlocked() || child.closed)
                         continue;
 
@@ -153,9 +142,26 @@ public class AStar {
                     }
                 }
             }
-            if (this.step_by_step)
-                break;
         }
+    }
+
+    private int directionCost(AStarNode currentNode, AStarNode neighbor, AStarNode goal) {
+        AStarNode parent = currentNode.parent;
+        if (parent == null) {
+            return 0;
+        }
+        // 出发点
+        if (parent == null) {
+            return 0;
+        }
+        // 走直线
+        if (neighbor.getMazeCell().x == parent.getMazeCell().x || neighbor.getMazeCell().y == parent.getMazeCell().y)
+            return 0;
+        // 拐向终点的点
+        if (neighbor.getMazeCell().x == goal.getMazeCell().x || neighbor.getMazeCell().y == goal.getMazeCell().y)
+            return 1;
+        // 普通拐点
+        return 2;
     }
 
     /* Private: */
@@ -164,10 +170,6 @@ public class AStar {
         public AStarNode parent;
         public int f, g, h;
         public boolean closed;
-
-        /* Private: */
-        private MazeCell maze_cell;
-        private TieBreakingStrategy tie_breaking_strategy;
 
         public AStarNode(MazeCell maze_cell, TieBreakingStrategy tie_breaking_strategy) {
             this.closed = false;
@@ -198,5 +200,14 @@ public class AStar {
         public String toString() {
             return String.format("%s [%2d %2d %2d]", this.maze_cell.toString(), this.f, this.g, this.h);
         }
+
+        /* Private: */
+        private MazeCell maze_cell;
+        private TieBreakingStrategy tie_breaking_strategy;
     }
+
+    private int w, h, path_cost, neighborhood;
+    private boolean has_solution, mark_path, step_by_step;
+    private AStarNode graph[][], goal, start;
+    private BinaryHeap open_list;
 }

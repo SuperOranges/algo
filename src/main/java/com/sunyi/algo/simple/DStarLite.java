@@ -17,20 +17,14 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.modules.motion_planning.algorithm;
-
-import com.sunyi.algo.model.Maze;
-import com.sunyi.algo.model.MazeCell;
-import com.sunyi.algo.modules.framework.algorithm.Heuristic;
-import com.sunyi.algo.modules.framework.data_structure.BinaryHeap;
-import com.sunyi.algo.modules.framework.data_structure.BinaryHeapElement;
+package com.sunyi.algo.simple;
 
 import java.util.Iterator;
 import java.util.Set;
 
 public class DStarLite {
-
-    public DStarLite(Maze maze, boolean mark_path, Heuristic heuristic) {
+    /* Public: */
+    public DStarLite(Maze maze, boolean mark_path, boolean step_by_step, Heuristic heuristic, int neighborhood) {
         this.heuristic = heuristic;
 
         this.w = maze.getW();
@@ -46,8 +40,8 @@ public class DStarLite {
         this.open_list = new BinaryHeap(this.w * this.h);
 
         this.has_solution = false;
-        this.step_by_step = false;
-        this.neighborhood = 4;
+        this.step_by_step = step_by_step;
+        this.neighborhood = neighborhood;
         this.mark_path = mark_path;
 
         this.last_agent_position = this.agent_position = this.graph[maze.getStart().getY()][maze.getStart().getX()];
@@ -120,11 +114,6 @@ public class DStarLite {
                     }
 
                 }
-                if (this.step_by_step) {
-                    i.remove();
-                    this.execution_finished = false;
-                    return;
-                }
             }
             this.blocked_cells = null;
         }
@@ -149,11 +138,6 @@ public class DStarLite {
                         this.updateNode(neighbour);
 
                     }
-                }
-                if (this.step_by_step) {
-                    i.remove();
-                    this.execution_finished = false;
-                    return;
                 }
             }
             this.unblocked_cells = null;
@@ -346,9 +330,6 @@ public class DStarLite {
         return true;
     }
 
-    /**
-     * TODO 修改此处使之输出一个路径序列
-     */
     private void markPath() {
         DStarLiteNode node, node_parent;
 
@@ -357,7 +338,6 @@ public class DStarLite {
 
         while (true) {
             node.getMazeCell().setNextMazeCell(node_parent.getMazeCell());
-            node.getMazeCell().setPathFlag();
             node = node_parent;
             node_parent = node.parent;
             if (node_parent == null) {
@@ -379,10 +359,11 @@ public class DStarLite {
 
                 x = node.getMazeCell().getX() + Maze.delta_x[i];
                 y = node.getMazeCell().getY() + Maze.delta_y[i];
-                int cost = this.getNodeCost(node);
+
 
                 if (0 <= x && x < this.w && 0 <= y && y < this.h) {
                     DStarLiteNode neighbour = this.graph[y][x];
+                    int cost = this.getNodeCost(node);
 
                     /* The start cell cannot generate children. */
                     if (neighbour.getMazeCell().isBlocked())
@@ -404,5 +385,24 @@ public class DStarLite {
             this.calculateKey(node);
             this.open_list.insert(node);
         }
+    }
+
+    private int directionCost(DStarLiteNode currentNode, DStarLiteNode neighbor, DStarLiteNode start) {
+        DStarLiteNode parent = currentNode.parent;
+        if (parent == null) {
+            return 0;
+        }
+        // 出发点
+        if (parent == null) {
+            return 0;
+        }
+        // 走直线
+        if (neighbor.getMazeCell().x == parent.getMazeCell().x || neighbor.getMazeCell().y == parent.getMazeCell().y)
+            return -2;
+        // 拐向终点的点
+        if (neighbor.getMazeCell().x == start.getMazeCell().x || neighbor.getMazeCell().y == start.getMazeCell().y)
+            return -1;
+        // 普通拐点
+        return 0;
     }
 }

@@ -17,29 +17,18 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.model;
+package com.sunyi.algo.simple;
 
 
 public class MazeCell {
-    /* Protected: */
-    protected int x, y;
-
-    /* Private: */
-    private static final byte BLOCKED = 0x7F;
-
-    private byte cost;
-    private MazeCell next_maze_cell;
-
-    private MazeCell() {
-    }
-
+    /* Public: */
 
     public MazeCell(int x, int y, int cost) {
         if (x < 0 || y < 0 || cost < 1 || cost >= BLOCKED)
             throw new IllegalArgumentException();
         this.x = x;
         this.y = y;
-        this.cost = (byte) cost;
+        this.cost = (short) cost;
         this.next_maze_cell = null;
     }
 
@@ -48,21 +37,23 @@ public class MazeCell {
     }
 
     public void clearPathFlag() {
-        this.cost &= 0x7F;
+        this.cost &= 0x7FFF;
     }
 
     @Override
     public MazeCell clone() {
         MazeCell maze_cell = new MazeCell();
+
         maze_cell.x = this.x;
         maze_cell.y = this.y;
         maze_cell.cost = this.cost;
         maze_cell.next_maze_cell = this.next_maze_cell;
+
         return maze_cell;
     }
 
     public int getCost() {
-        return (this.cost & 0x7F);
+        return (this.cost & 0x7FFF);
     }
 
     public MazeCell getNextMazeCell() {
@@ -82,13 +73,13 @@ public class MazeCell {
     }
 
     public boolean isPathFlagOn() {
-        return (this.cost & 0x80) != 0;
+        return (this.cost & 0x8000) != 0;
     }
 
     public void setCost(int cost) {
-        if (cost > 0x7F)
+        if (cost > 0x7FFF)
             throw new IllegalArgumentException();
-        this.cost = (byte) cost;
+        this.cost = (short) cost;
     }
 
     public void setNextMazeCell(MazeCell maze_cell) {
@@ -96,11 +87,11 @@ public class MazeCell {
     }
 
     public void unsetPathFlag() {
-        this.cost &= ~0x80;
+        this.cost &= ~0x8000;
     }
 
     public void setPathFlag() {
-        this.cost |= 0x80;
+        this.cost |= 0x8000;
     }
 
     public void copyConfiguration(MazeCell mazeCell) {
@@ -109,8 +100,7 @@ public class MazeCell {
 
     @Override
     public String toString() {
-        int aux = this.x + 1;
-        return new String((aux < 10 ? " " : "") + Integer.toString(aux) + Character.toString((char) (this.y + 'A')));
+        return new String("[" + this.x + "," + this.y + "]");
     }
 
     public boolean equalsCoordinatesAndCost(MazeCell maze_cell) {
@@ -126,5 +116,15 @@ public class MazeCell {
         return maze_cell.x == this.x && maze_cell.y == this.y;
     }
 
+    /* Protected: */
+    protected int x, y;
 
+    /* Private: */
+    private static final short BLOCKED = 0x7FFF;
+
+    private short cost;
+    private MazeCell next_maze_cell;
+
+    private MazeCell() {
+    }
 }

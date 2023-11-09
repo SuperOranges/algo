@@ -17,12 +17,15 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.modules.framework.algorithm;
+package com.sunyi.algo.simple;
 
+public class DistanceCalculator {
+	/* Public: */
+	public static int manhattanDistance(int x1, int y1, int x2, int y2) {
+		return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+	}
 
-import com.sunyi.algo.model.MazeCell;
-
-public interface Heuristic {
-
-    int distanceToGoal(MazeCell maze_cell, MazeCell goal);
+	public static int diagonalDistance(int x1, int y1, int x2, int y2) {
+		return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
+	}
 }

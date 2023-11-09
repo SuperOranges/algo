@@ -17,14 +17,9 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.modules.framework.data_structure;
+package com.sunyi.algo.simple;
 
-public class BinaryHeapException extends RuntimeException {
-
-    public BinaryHeapException(String message) {
-        super(message);
-    }
-
-
-    private static final long serialVersionUID = 1L;
+public interface Heuristic {
+    /* Public: */
+    int distanceToGoal(MazeCell maze_cell, MazeCell goal);
 }

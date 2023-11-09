@@ -17,7 +17,7 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.modules.framework.data_structure;
+package com.sunyi.algo.simple;
 
 import java.util.ArrayList;
 import java.util.List;

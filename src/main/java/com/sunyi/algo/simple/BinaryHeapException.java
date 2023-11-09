@@ -17,29 +17,14 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.modules.framework.algorithm;
+package com.sunyi.algo.simple;
 
-import com.sunyi.algo.model.MazeCell;
-import com.sunyi.algo.modules.framework.DistanceCalculator;
+public class BinaryHeapException extends RuntimeException {
+	/* Public: */
+	public BinaryHeapException(String message) {
+		super(message);
+	}
 
-
-public class ManhattanDistanceHeuristic implements Heuristic {
-
-    public static ManhattanDistanceHeuristic getInstance() {
-        if (manhattan_distance_heuristic == null) {
-            manhattan_distance_heuristic = new ManhattanDistanceHeuristic();
-        }
-        return manhattan_distance_heuristic;
-    }
-
-    @Override
-    public int distanceToGoal(MazeCell maze_cell, MazeCell goal) {
-        return DistanceCalculator.manhattanDistance(maze_cell.getX(), maze_cell.getY(), goal.getX(), goal.getY());
-    }
-
-
-    private static ManhattanDistanceHeuristic manhattan_distance_heuristic = null;
-
-    private ManhattanDistanceHeuristic() {
-    }
+	/* Private: */
+	private static final long serialVersionUID = 1L;
 }

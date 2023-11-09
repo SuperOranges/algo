@@ -17,15 +17,16 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.modules.framework;
+package com.sunyi.algo.simple;
 
-public class DistanceCalculator {
-
-    public static int manhattanDistance(int x1, int y1, int x2, int y2) {
-        return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+public abstract class BinaryHeapElement {
+    /* Public: */
+    public BinaryHeapElement() {
+        this.binary_heap_index = 0;
     }
 
-    public static int diagonalDistance(int x1, int y1, int x2, int y2) {
-        return Math.max(Math.abs(x1 - x2), Math.abs(y1 - y2));
-    }
+    public abstract boolean lessThanForHeap(BinaryHeapElement e);
+
+    /* Default: */
+    /* default */ int binary_heap_index;
 }

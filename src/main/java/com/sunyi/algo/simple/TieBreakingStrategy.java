@@ -17,15 +17,8 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.modules.framework.data_structure;
+package com.sunyi.algo.simple;
 
-public abstract class BinaryHeapElement {
-
-    public BinaryHeapElement() {
-        this.binary_heap_index = 0;
-    }
-
-    public abstract boolean lessThanForHeap(BinaryHeapElement e);
-
-    int binary_heap_index;
+public enum TieBreakingStrategy {
+	NONE, HIGHEST_G_VALUES, SMALLEST_G_VALUES
 }

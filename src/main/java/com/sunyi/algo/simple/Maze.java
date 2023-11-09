@@ -17,39 +17,64 @@
  * along with Search Algorithms Demonstrations.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.sunyi.algo.model;
+package com.sunyi.algo.simple;
 
-import lombok.Data;
+import java.util.Random;
 
-@Data
 public class Maze implements Cloneable {
-
+    /* Public: */
     public static final int N_DIRECTIONS_WITHOUT_DIAGONALS = 4;
+    public static final int N_DIRECTIONS_WITH_DIAGONALS = 8;
     public static final int delta_x[] = {0, 1, -1, 0, 1, 1, -1, -1};
     public static final int delta_y[] = {1, 0, 0, -1, -1, 1, 1, -1};
 
-    /* Private: */
-    private int w, h;
-    private MazeCell cells[][];
-    private MazeCell start, goal;
+    public Maze(long seed, int w, int h, float probability_to_block_a_cell, int max_cost, boolean fix_start_and_goal) {
+        Random random = new Random(seed);
 
-    /**
-     * @param w 横向大小
-     * @param h 纵向大小
-     */
-    public Maze(int w, int h, MazeCell[][] mazeCells) {
-        if (w < 2 || h < 2) {
+        if (w < 2 || h < 2 || probability_to_block_a_cell > 1 || probability_to_block_a_cell < 0 || max_cost > 0x7F || max_cost < 1)
             throw new IllegalArgumentException();
-        }
+
         this.w = w;
         this.h = h;
-        //初始化设置地图的成本
         this.cells = new MazeCell[h][w];
+
         for (int y = 0; y < h; y++) {
             for (int x = 0; x < w; x++) {
-                this.cells[y][x] = mazeCells[y][x].clone();
+                //boolean blocked = (random.nextFloat() < probability_to_block_a_cell);
+                boolean blocked = false;
+                int cost = random.nextInt(max_cost) + 1;
+
+                this.cells[y][x] = new MazeCell(x, y, cost);
+                if (blocked)
+                    this.cells[y][x].block();
             }
         }
+
+        /* Choose the start cell. */
+        {
+            int x, y;
+            if (fix_start_and_goal) {
+                x = this.w - 1;
+                y = this.h - 1;
+            } else {
+                x = random.nextInt(w);
+                y = random.nextInt(h);
+            }
+            this.setStart(x, y);
+        }
+
+        /* Choose the goal cell. */
+        do {
+            int x, y;
+            if (fix_start_and_goal) {
+                x = 0;
+                y = 0;
+            } else {
+                x = random.nextInt(w);
+                y = random.nextInt(h);
+            }
+            this.setGoal(x, y);
+        } while (this.start == this.goal);
     }
 
     @Override
@@ -121,10 +146,14 @@ public class Maze implements Cloneable {
 
     public void setGoal(MazeCell maze_cell) {
         this.goal = maze_cell;
+        if (maze_cell.isBlocked())
+            maze_cell.setCost(1);
     }
 
     public void setStart(MazeCell maze_cell) {
         this.start = maze_cell;
+        if (maze_cell.isBlocked())
+            maze_cell.setCost(1);
     }
 
     public void setGoal(int x, int y) {
@@ -138,18 +167,20 @@ public class Maze implements Cloneable {
     @Override
     public String toString() {
         StringBuilder s = new StringBuilder("W: " + this.w + " H: " + this.h + "\n");
+
         s.append("   ");
         for (int x = 0; x < this.w; x++) {
-            s.append(String.format("%2d ", x + 1));
+            s.append(String.format("%2d ", x));
         }
         s.append('\n');
+
         for (int y = 0; y < this.h; y++) {
-            s.append(" ").append((char) ('A' + y)).append(" ");
+            s.append(" ").append(y).append(" ");
             for (int x = 0; x < this.w; x++) {
                 if (this.cells[y][x] == this.goal) {
-                    s.append(String.format("G%d ", this.cells[y][x].getCost()));
+                    s.append(String.format("G%d", this.cells[y][x].getCost()));
                 } else if (this.cells[y][x] == this.start) {
-                    s.append(String.format("S%d ", this.cells[y][x].getCost()));
+                    s.append(String.format("S%d", this.cells[y][x].getCost()));
                 } else if (this.cells[y][x].isBlocked()) {
                     s.append(" X ");
                 } else if (this.cells[y][x].isPathFlagOn()) {
@@ -162,6 +193,7 @@ public class Maze implements Cloneable {
         }
         return s.toString();
     }
+
 
     @Override
     public boolean equals(Object obj) {
@@ -181,4 +213,9 @@ public class Maze implements Cloneable {
         }
         return true;
     }
+
+    /* Private: */
+    private int w, h;
+    private MazeCell cells[][];
+    private MazeCell start, goal;
 }
