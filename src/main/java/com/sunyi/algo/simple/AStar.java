@@ -21,7 +21,7 @@ package com.sunyi.algo.simple;
 
 public class AStar {
     /* Public: */
-    public AStar(Maze maze, boolean mark_path, boolean step_by_step, TieBreakingStrategy tie_breaking_strategy, Heuristic heuristic, int neighborhood) {
+    public AStar(Maze maze, boolean mark_path, boolean step_by_step, TieBreakingStrategy tie_breaking_strategy, Heuristic heuristic, int neighborhood, int currentDirect) {
 
         this.h = maze.getH();
         this.w = maze.getW();
@@ -46,6 +46,7 @@ public class AStar {
         this.start.g = 0;
         this.start.f = this.start.g + this.start.h;
         this.open_list.insert(this.start);
+        this.direct = currentDirect;
     }
 
     public String getOpenListText() {
@@ -92,6 +93,7 @@ public class AStar {
 
     public void solve() {
         AStarNode node;
+        boolean changedFirstPriority = direct == 5;
         while (!this.hasExecutionFinished()) {
             node = (AStarNode) this.open_list.pop();
             node.closed = true;
@@ -102,13 +104,13 @@ public class AStar {
                 this.has_solution = true;
 
                 if (this.mark_path) {
-                    node.getMazeCell().setPathFlag();
+                    //node.getMazeCell().setPathFlag();
                     node_child = node;
                     node = node.parent;
 
                     do {
-                        node.getMazeCell().setNextMazeCell(node_child.getMazeCell());
-                        node.getMazeCell().setPathFlag();
+                        //node.getMazeCell().setNextMazeCell(node_child.getMazeCell());
+                        //node.getMazeCell().setPathFlag();
                         node_child = node;
                         node = node.parent;
                     } while (node != null);
@@ -118,9 +120,14 @@ public class AStar {
 
             for (int i = 0; i < this.neighborhood; i++) {
                 int x, y;
-                x = node.getMazeCell().getX() + Maze.delta_x[i];
-                y = node.getMazeCell().getY() + Maze.delta_y[i];
-
+                if (changedFirstPriority) {
+                    x = node.getMazeCell().getX() + Maze.delta_x[i];
+                    y = node.getMazeCell().getY() + Maze.delta_y[i];
+                } else {
+                    x = node.getMazeCell().getX() + Maze.delta_x[direct];
+                    y = node.getMazeCell().getY() + Maze.delta_y[direct];
+                    changedFirstPriority = true;
+                }
                 if (0 <= x && x < this.w && 0 <= y && y < this.h) {
                     AStarNode child = this.graph[y][x];
                     int cost = node.getMazeCell().getCost() + directionCost(node, child, this.goal);
@@ -147,9 +154,6 @@ public class AStar {
 
     private int directionCost(AStarNode currentNode, AStarNode neighbor, AStarNode goal) {
         AStarNode parent = currentNode.parent;
-        if (parent == null) {
-            return 0;
-        }
         // 出发点
         if (parent == null) {
             return 0;
@@ -157,11 +161,8 @@ public class AStar {
         // 走直线
         if (neighbor.getMazeCell().x == parent.getMazeCell().x || neighbor.getMazeCell().y == parent.getMazeCell().y)
             return 0;
-        // 拐向终点的点
-        if (neighbor.getMazeCell().x == goal.getMazeCell().x || neighbor.getMazeCell().y == goal.getMazeCell().y)
-            return 1;
-        // 普通拐点
-        return 2;
+        // 普通拐点和终点拐点
+        return 1;
     }
 
     /* Private: */
@@ -210,4 +211,6 @@ public class AStar {
     private boolean has_solution, mark_path, step_by_step;
     private AStarNode graph[][], goal, start;
     private BinaryHeap open_list;
+    //0表示s方向，1表示E方向，2表示w方向，3表示N方向
+    private int direct;
 }

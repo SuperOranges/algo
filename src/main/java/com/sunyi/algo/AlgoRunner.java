@@ -23,7 +23,7 @@ public class AlgoRunner {
     private final DStarLite timeDStarLite;
     private final Maze timeMaze;
 
-    private final AStar star;
+    private AStar star;
 
 
     Random random = new Random(184049348294100L);
@@ -44,21 +44,22 @@ public class AlgoRunner {
         this.timeMaze = new Maze(seed, w, h, 0.0000000f, 100, false);
         this.timeDStarLite = new DStarLite(timeMaze, false, false, ManhattanDistanceHeuristic.getInstance(), 4);
 
-        this.star = new AStar(powerMaze, false, false, TieBreakingStrategy.SMALLEST_G_VALUES, ManhattanDistanceHeuristic.getInstance(), 4);
+        this.star = new AStar(powerMaze, false, false, TieBreakingStrategy.SMALLEST_G_VALUES, ManhattanDistanceHeuristic.getInstance(), 4, 1);
         //设置要发生变化的位置
     }
 
 
     public Position getSolution() {
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 10000; i++) {
             int x = random.nextInt(50);
             int y = random.nextInt(50);
             this.powerMaze.setStart(x, y);
+            this.powerDStarLite.informNewStart(powerMaze.getStart());
 
             int m = random.nextInt(50);
             int n = random.nextInt(50);
-            this.powerMaze.setGoal(m, n);
+            //this.powerMaze.setGoal(m, n);
             this.powerDStarLite.solve();
         }
         long endTime = System.currentTimeMillis();
@@ -69,7 +70,7 @@ public class AlgoRunner {
 
     public Position getSolutionAStar() {
         long startTime = System.currentTimeMillis();
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 80; i++) {
             int x = random.nextInt(50);
             int y = random.nextInt(50);
             this.powerMaze.setStart(x, y);
@@ -77,10 +78,19 @@ public class AlgoRunner {
             int m = random.nextInt(50);
             int n = random.nextInt(50);
             this.powerMaze.setGoal(m, n);
+            this.star = new AStar(powerMaze, false, false, TieBreakingStrategy.SMALLEST_G_VALUES, ManhattanDistanceHeuristic.getInstance(), 4, 1);
             this.star.solve();
         }
         long endTime = System.currentTimeMillis();
         System.out.println("程序运行时间：" + (endTime - startTime) + "ms");
+
+        long startTime1 = System.currentTimeMillis();
+        for (int i = 0; i < 100000; i++) {
+            int m = random.nextInt(50);
+
+        }
+        long endTime1 = System.currentTimeMillis();
+        System.out.println("程序运行时间：" + (endTime1 - startTime1) + "ms");
         return null;
     }
 
